@@ -7,6 +7,27 @@ from gamelib import Sprite, GameApp, Text
 
 from consts import *
 
+class Basket(Sprite):
+    def __init__(self, app, x, y):
+        super().__init__(app, 'images/basket.png', x, y)
+
+        self.app = app
+        self.direction = None
+
+    def update(self):
+        if self.direction == BASKET_LEFT:
+            if self.x >= BASKET_MARGIN:
+                self.x -= BASKET_SPEED
+        elif self.direction == BASKET_RIGHT:
+            if self.x <= CANVAS_WIDTH - BASKET_MARGIN:
+                self.x += BASKET_SPEED
+
+    def check_collision(self, fruit):
+        if self.distance_to(fruit) <= BASKET_CATCH_DISTANCE:
+            fruit.to_be_deleted = True
+            self.app.score += 1
+            self.app.update_score()
+
 class SlowFruit(Sprite):
     def __init__(self, app, x, y):
         super().__init__(app, 'images/apple.png', x, y)
@@ -64,28 +85,6 @@ class CurvyFruit(Sprite):
             self.to_be_deleted = True
 
 
-class Basket(Sprite):
-    def __init__(self, app, x, y):
-        super().__init__(app, 'images/basket.png', x, y)
-
-        self.app = app
-        self.direction = None
-
-    def update(self):
-        if self.direction == BASKET_LEFT:
-            if self.x >= BASKET_MARGIN:
-                self.x -= BASKET_SPEED
-        elif self.direction == BASKET_RIGHT:
-            if self.x <= CANVAS_WIDTH - BASKET_MARGIN:
-                self.x += BASKET_SPEED
-
-    def check_collision(self, fruit):
-        if self.distance_to(fruit) <= BASKET_CATCH_DISTANCE:
-            fruit.to_be_deleted = True
-            self.app.score += 1
-            self.app.update_score()
-
-
 class BasketGame(GameApp):
     def init_game(self):
         self.basket = Basket(self, CANVAS_WIDTH // 2, CANVAS_HEIGHT - 50)
@@ -96,7 +95,7 @@ class BasketGame(GameApp):
         self.fruits = []
 
     def update_score(self):
-        self.score_text.set_text('Score: ' + str(self.score))
+        self.score_text.set_text(f'Score: {self.score}')
 
     def random_fruits(self):
         if random() > 0.95:
@@ -130,10 +129,10 @@ class BasketGame(GameApp):
 
     def post_update(self):
         self.process_collisions()
-
         self.random_fruits()
 
         self.fruits = self.update_and_filter_deleted(self.fruits)
+        self.update_score
 
     def on_key_pressed(self, event):
         if event.keysym == 'Left':

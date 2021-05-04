@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from abc import ABC, abstractmethod
 from utils import distance
 
+
 class GameElement(ABC):
 
     @abstractmethod
